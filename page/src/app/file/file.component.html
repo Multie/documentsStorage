@@ -1,0 +1,169 @@
+<div *ngIf="file" class="root">
+    <mat-toolbar>
+        <button mat-icon-button (click)="back()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="spacer">{{file.name}}</span>
+        <!--<button mat-icon-button (click)="save()">
+            <mat-icon>save</mat-icon>
+        </button>
+        <button mat-icon-button (click)="addFile()">
+            <mat-icon>note_add</mat-icon>
+        </button>-->
+        <button class="detailsHeaderIcon" *ngIf="showDetails && editDetails" mat-icon-button
+                        (click)="save()">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                    <button class="detailsHeaderIcon" *ngIf="showDetails && editDetails" mat-icon-button
+                        (click)="close()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <button class="detailsHeaderIcon" *ngIf="showDetails && !editDetails" mat-icon-button
+                        (click)="editDetails=!editDetails">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="detailsHeaderIcon" mat-icon-button (click)="showDetails=!showDetails">
+                        <mat-icon>article</mat-icon>
+                    </button>
+    </mat-toolbar>
+
+    <div class="content">
+        <div class="document">
+            <mat-tab-group class="documentGroup" [(selectedIndex)]="selectedTabIndex">
+                <!--<mat-tab *ngIf="editDetails" label="New Image">
+                    <input #fileInput type="file">
+                    <button (click)="uploadFile()">
+                        Upload
+                    </button>
+                    <button>
+                        Remove
+                    </button>
+                </mat-tab>-->
+                <mat-tab class="documentGroupTab" *ngFor="let path of file.files" label="{{path}}">
+                    <ng-template matTabContent>
+                        <div class="documentImageContainer" *ngIf="isImage(path)">
+
+                            <img class="documentImage" src="{{createFullImageUrl(path)}}">
+
+                        </div>
+                        <div class="pdf" *ngIf="isPdf(path)">
+                            <pdf-viewer [src]="createFullImageUrl(path)" [render-text]="true" [original-size]="false"
+                                style="width: 400px; height: 500px"></pdf-viewer>
+                        </div>
+                        <div class="video" *ngIf="isVideo(path)">
+
+                        </div>
+                        <div class="other" *ngIf="isOther(path)">
+
+                        </div>
+                        <button class="documentImageRemove" *ngIf="editDetails" mat-icon-button
+                        (click)="removeFile(path)">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </ng-template>
+                </mat-tab>
+
+            </mat-tab-group>
+        </div>
+
+        <div class="details">
+            <div class="detailsWrapper">
+
+                <div class="detailsHeader">
+                    
+                </div>
+                <div class="detailsContent">
+                    <div *ngIf="showDetails">
+                        <div *ngIf="editDetails">
+                            <mat-form-field class="detailsContentElement">
+                                <input type="text" [readonly]="!editDetails" [(ngModel)]="file.name" matInput
+                                    placeholder="Name">
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field class="detailsContentElement">
+                                <input type="text" [readonly]="!editDetails" [(ngModel)]="file.description" matInput
+                                    placeholder="Description">
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <div>
+                                <mat-form-field class="detailsContentElement">
+                                    <input type="date" [readonly]="!editDetails" [(ngModel)]="file.date" matInput
+                                        placeholder="Date">
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <mat-form-field class="detailsContentElement">
+                                    <input type="text" [readonly]="!editDetails" [(ngModel)]="file.type" matInput
+                                        placeholder="Type">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div>
+                            <mat-form-field class="detailsContentElement">
+                                <mat-chip-list #listCategory>
+                                    <mat-chip *ngFor="let categoryKey of file.category"
+                                        (removed)="removeChip(file.category,categoryKey)">
+                                        {{categoryKey}}
+                                        <button matChipRemove *ngIf="editDetails">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </mat-chip>
+                                    <input [readonly]="!editDetails" placeholder="Categories" [matChipInputFor]="listCategory"
+                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                        [matChipInputAddOnBlur]="addOnBlur"
+                                        (matChipInputTokenEnd)="addChip(file.category,$event)">
+                                </mat-chip-list>
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field class="detailsContentElement">
+                                <mat-chip-list #listKeywords>
+                                    <mat-chip *ngFor="let ocrKey of file.keywords"
+                                        (removed)="removeChip(file.keywords,ocrKey)">
+                                        {{ocrKey}}
+                                        <button matChipRemove *ngIf="editDetails">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </mat-chip>
+                                    <input [readonly]="!editDetails" placeholder="Keywords" [matChipInputFor]="listKeywords"
+                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                        [matChipInputAddOnBlur]="addOnBlur"
+                                        (matChipInputTokenEnd)="addChip(file.keywords,$event)">
+                                </mat-chip-list>
+                            </mat-form-field>
+                        </div>
+                        <div [ngStyle]="{'visibility':(editDetails ? 'visible' : 'hidden') }">
+                            New File:
+                            <input #fileInput type="file" capture="user" accept="image/*">
+                            <button (click)="uploadFile()">
+                                Upload
+                            </button>
+                            <button>
+                                Remove 
+                            </button>
+                        </div>
+                        <div *ngIf="editDetails">
+                            <mat-form-field class="detailsContentElement">
+                                <mat-chip-list #listKeywords>
+                                    <mat-chip *ngFor="let ocrKey of file.ocr" (removed)="removeChip(file.ocr,ocrKey)">
+                                        {{ocrKey}}
+                                        <button matChipRemove *ngIf="editDetails">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </mat-chip>
+                                    <input [readonly]="!editDetails" placeholder="OCR" [matChipInputFor]="listKeywords"
+                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                        [matChipInputAddOnBlur]="addOnBlur"
+                                        (matChipInputTokenEnd)="addChip(file.ocr,$event)">
+                                </mat-chip-list>
+                            </mat-form-field>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

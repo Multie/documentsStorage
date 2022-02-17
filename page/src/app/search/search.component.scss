@@ -1,0 +1,35 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+}
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0px 16px;
+    flex-grow: 1;
+}
+
+.header {
+    display: flex;
+    padding: 0px 16px;
+    justify-content: center;
+}
+
+.content *{
+    margin: 0px 4px;
+}
+
+.inputText {
+    min-width: 150px;
+    flex-grow: 1;
+}
+
+.inputDate {
+    width: 120px;
+}
+.inputEndDate {
+    width: 120px;
+}

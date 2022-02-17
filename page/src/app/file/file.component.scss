@@ -1,0 +1,107 @@
+.root {
+    display: flex; 
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}   
+.content {
+    height: 100%;
+    position: relative;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.label {
+    margin-right: 16px;
+    min-width: 100px;
+}
+
+.input {
+    flex-grow: 1;
+}
+
+
+
+
+
+.document {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.documentGroup {
+    height: 100%;
+    width: 100%;
+}
+.documentGroup .mat-tab-body-wrapper {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    padding: 16px;
+}
+
+.documentImageContainer {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    min-height: 100px;
+}
+.documentImage {
+    max-height: 90%;
+    max-width: 90%;
+}
+.documentImageRemove {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+
+
+.details {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    align-items: center;
+   
+}
+.detailsWrapper {
+   
+    width: 750px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.detailsHeader {
+    //background: rgba(33, 33, 33,0.9);
+    display: flex;
+    justify-content: flex-end;
+    z-index: 10;
+}
+.detailsContent {
+    margin: 16px 0px;
+    background: rgba(48, 48, 48,0.9);
+    z-index: 10;
+   
+}
+.detailsHeaderIcon {
+    background: rgba(33, 33, 33,0.9);
+   
+}
+
+.detailsContentElement{
+    width: 100%;
+    height: 56.8833px;
+   
+}
+.detailsContentElementInput {
+
+}

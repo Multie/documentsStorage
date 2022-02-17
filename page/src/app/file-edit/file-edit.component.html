@@ -1,0 +1,132 @@
+<mat-toolbar>
+    <button mat-icon-button (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="spacer">File</span>
+    <button mat-icon-button (click)="save()">
+        <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button (click)="addFile()">
+        <mat-icon>note_add</mat-icon>
+    </button>
+</mat-toolbar>
+
+
+<mat-list>
+
+    <div class="item">
+        <div class="label">
+            Name
+        </div>
+        <mat-form-field class="input">
+            <input type="text" [(ngModel)]="file.name" matInput>
+        </mat-form-field>
+    </div>
+    <div class="item">
+        <div class="label">
+            Files
+        </div>
+
+        <div class="itemFile" *ngIf="file.id >= 0">
+            <div class="itemFileInput">
+                <input #fileInput type="file">
+                <button (click)="uploadFile()">
+                    Upload
+                </button>
+                <button>
+                    Reload
+                </button>
+            </div>
+            <div class="itemFileList">
+                <div class="itemFileListItem" *ngFor="let file of file.files">
+                    <button class="itemFileListItemRemove" mat-icon-button (click)="removeFile(file)">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                    <button class="itemFileListItemOCR" mat-icon-button>
+                        <mat-icon>find_in_page</mat-icon>
+                    </button>
+                    <div *ngIf="isImage(file)">
+                        <img class="itemFileListItemImage" src="{{createFullImageUrl(file)}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="item">
+        <div class="label">
+            Type
+        </div>
+        <mat-form-field class="input">
+            <input type="text" [(ngModel)]="file.type" matInput>
+        </mat-form-field>
+    </div>
+    <div class="item">
+        <div class="label">
+            Description
+        </div>
+        <mat-form-field class="input">
+            <textarea  type="text" [(ngModel)]="file.description" matInput></textarea>
+        </mat-form-field>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            Keywords
+        </div>
+        <mat-form-field class="input">
+            <mat-chip-list #listKeywords>
+                <mat-chip *ngFor="let ocrKey of file.keywords" (removed)="removeChip(file.keywords,ocrKey)">
+                    {{ocrKey}}
+                    <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+                <input placeholder="New Keyword" [matChipInputFor]="listKeywords"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                    (matChipInputTokenEnd)="addChip(file.keywords,$event)">
+            </mat-chip-list>
+        </mat-form-field>
+    </div>
+    <div class="item">
+        <div class="label">
+            Category
+        </div>
+        <mat-form-field class="input">
+            <mat-chip-list #listCategory>
+                <mat-chip *ngFor="let categoryKey of file.category" (removed)="removeChip(file.category,categoryKey)">
+                    {{categoryKey}}
+                    <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+                <input placeholder="New Category..." [matChipInputFor]="listCategory"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                    (matChipInputTokenEnd)="addChip(file.category,$event)">
+            </mat-chip-list>
+        </mat-form-field>
+    </div>
+
+
+    <div class="item">
+        <div class="label">
+            OCR
+        </div>
+
+        <mat-form-field class="input">
+            <mat-chip-list #listOCR>
+                <mat-chip *ngFor="let ocrKey of file.ocr" (removed)="removeChip(file.ocr,ocrKey)">
+                    {{ocrKey}}
+                    <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+                <input placeholder="New Key..." [matChipInputFor]="listOCR"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                    (matChipInputTokenEnd)="addChip(file.ocr,$event)">
+            </mat-chip-list>
+        </mat-form-field>
+
+
+    </div>
+</mat-list>

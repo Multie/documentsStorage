@@ -1,0 +1,105 @@
+<div class="root">
+
+
+<mat-toolbar>
+    <button mat-icon-button (click)="data.sidenav=true">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <span class="spacer">Files</span>
+    <button mat-icon-button (click)="addFile()">
+        <mat-icon>add</mat-icon>
+    </button>
+</mat-toolbar>
+<mat-list class="list">
+    <app-search></app-search>
+    <!--<div class="cardContainer" *ngFor="let file of files">
+       <div>
+            <div class="itemImageBox">
+                <img class="itemImage"  *ngIf="file.files.length > 0" src="{{createFullImageUrl(file.files[0].path)}}">
+            </div>
+        </div>
+        <div class="itemTexte">
+            <div class="itemName">
+                {{file.name}}
+            </div>
+            <div class="itemDescription">
+                {{file.description}}
+            </div>
+            <div>
+                <mat-chip-list #listKeywords>
+                    <mat-chip *ngFor="let keyword of file.keywords">
+                        {{keyword}}
+                    </mat-chip>
+                </mat-chip-list>
+            </div>
+        </div>
+        <div>
+            <button mat-icon-button (click)="editFile(file)">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>-->
+    
+
+    <!--<mat-card class="card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title> {{file.name}}</mat-card-title>
+          <mat-card-subtitle>{{file.name}}</mat-card-subtitle>
+        </mat-card-header>
+        <img  class="cardImage" *ngIf="file.files.length > 0" src="{{createFullImageUrl(file.files[0])}}">
+        <mat-card-content >
+          <p class="cardDescription">
+            {{file.description}}
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button  (click)="editFile(file)"> <mat-icon>edit</mat-icon></button>
+        </mat-card-actions>
+      </mat-card>
+    </div>-->
+    <div class="itemFileList">
+        <div class="itemFileListItem" *ngFor="let file of files">
+            
+            <div class="itemImageBox" *ngIf="file.files.length > 0">
+                <img class="itemFileListItemImage" src="{{createFullImageUrl(file.files[0])}}">
+            </div>
+            <div class="itemTextSection">
+                <div class="itemTextSectionTitle">
+                    {{file.name}}
+                </div>
+                <div class="itemTextSectionDescription">
+                    {{file.description}}
+                </div>
+                <div class="itemTextSectionKeywords">
+                    <mat-chip-list>
+                        <mat-chip *ngFor="let keyword of file.keywords">
+                            {{keyword}}
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+            </div>
+            <div class="itemInfoSection">
+                <button class="itemInfoSectionEdit" mat-icon-button (click)="editFile(file)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <div class="itemInfoSectionType">
+                    {{file.type}}
+                </div>
+                <div class="itemInfoSectionCategory">
+                    <mat-chip *ngFor="let category of file.category.slice(0,2)">
+                        {{category}}
+                    </mat-chip>
+                </div>
+              
+            </div>
+        </div>
+       
+    </div>
+</mat-list>
+<!--
+<mat-paginator 
+[length]="length"
+[pageSize]="pageSize"
+[pageSizeOptions]="pageSizeOptions"
+(page)="changePage($event)"></mat-paginator>-->
+</div>

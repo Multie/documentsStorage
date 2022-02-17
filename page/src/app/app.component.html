@@ -1,0 +1,24 @@
+
+<mat-drawer-container class="drawerContent">
+  <mat-drawer class="drawer" [opened]="data.sidenav" (closedStart)="data.sidenav=false">
+      
+      <mat-action-list>
+          <div *ngFor="let nav of navigation">
+
+              <button mat-list-item (click)="navigate(nav.path)">
+                  <mat-icon>{{nav.icon}}</mat-icon> 
+                  <div class="drawerLabel">
+                      {{nav.label}}
+                  </div>
+                 
+              </button>
+          <mat-divider></mat-divider>
+      </div>
+      </mat-action-list>
+
+  </mat-drawer>
+  <mat-drawer-content class="drawerContent">
+      <router-outlet></router-outlet></mat-drawer-content>
+</mat-drawer-container>
+
+

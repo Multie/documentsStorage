@@ -1,0 +1,61 @@
+.spacer {
+    flex-grow: 1;
+}
+
+.label {
+    margin-right: 16px;
+    min-width: 100px;
+}
+
+.input {
+    flex-grow: 1;
+}
+.item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0px 16px;
+}
+.itemFile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.itemFileInput {
+   margin: 8px 0px;
+}
+.itemFileList {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.itemFileListItem {
+    min-width: 200px;
+    height: 200px;
+    box-shadow: 2px 2px 1px 2px black;
+    margin: 8px;
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.itemFileListItemRemove {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    z-index: 10;
+}
+.itemFileListItemOCR {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+  }
+.itemFileListItemImage {
+  max-width: 200px;
+  max-height: 200px;
+}
