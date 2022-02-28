@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { dataFile, DataService } from '../data.service';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
+import { filterFileInfo } from '../search/search.component';
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
@@ -19,12 +20,14 @@ export class FilesComponent implements OnInit {
   // MatPaginator Output
   pageEvent: PageEvent;
 
+  filter:filterFileInfo;
+
   constructor(public data: DataService, private router: Router, private route: ActivatedRoute) {
     this.files = [];
     this.pageEvent = new PageEvent();
     //this.getFiles();
     this.currentPage = 0;
-
+    this.filter = new filterFileInfo();
   }
 
   ngOnInit(): void {
@@ -33,13 +36,13 @@ export class FilesComponent implements OnInit {
       if (params.page) {
         this.currentPage = params.page;
       }
-      this.getFiles(this.currentPage * this.pageSize, this.pageSize);
+      this.getFiles(this.filter);
 
     });
   }
 
-  getFiles(start: number = -1, count: number = -1) {
-    this.data.getFileInfos(start, count).subscribe((files) => {
+  getFiles(filter:filterFileInfo) {
+    this.data.getFileInfos(filter).subscribe((files) => {
       this.files = files;
       this.length = files.length;
     });
@@ -60,9 +63,9 @@ export class FilesComponent implements OnInit {
     this.data.getNewId().subscribe((id)=> {
      
      // this.router.navigateByUrl("/new-file");
-      this.router.navigateByUrl("/files/-1");
+     // this.router.navigateByUrl("/files/"+id);
     });
-    
+    this.router.navigateByUrl("/newfile");
   }
   editFile(file: dataFile) {
     this.router.navigateByUrl("/files/" + file.id);
@@ -71,4 +74,11 @@ export class FilesComponent implements OnInit {
     return this.data.createFullImageUrl(path);
   }
 
+  applyfilter(event:any) {
+    console.log(event);
+    this.data.getFileInfos(event).subscribe((files) => {
+      this.files = files;
+      this.length = files.length;
+    });
+  }
 }

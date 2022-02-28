@@ -18,11 +18,11 @@ export class SearchComponent implements OnInit {
   open:boolean;
 
   @Output() filter:EventEmitter<any>;
-
+  filterObject:filterFileInfo;
   constructor() { 
     this.open = false;
     this.filter = new EventEmitter<any>();
-
+    this.filterObject = new filterFileInfo();
     this.search = "";
     this.startDate = new Date(0);
     this.endDate = new Date(Date.now());
@@ -39,7 +39,33 @@ export class SearchComponent implements OnInit {
     this.open = !this.open;
   }
 
+  keyDown(event:any) {
+
+  }
+
   applyFilter() {
-    this.filter.emit();
+    this.filter.emit(this.filterObject);
+  }
+}
+export class filterFileInfo {
+  name:string;
+  description:string;
+  startDate:Date;
+  endDate:Date;
+  keywords:string;
+  category:string;
+  count:number;
+  offset:number;
+  id:number;
+  constructor() {
+    this.name="";
+    this.description = "";
+    this.startDate = new Date(0);
+    this.endDate = new Date(Date.now());
+    this.keywords = "";
+    this.category = "";
+    this.count = 100;
+    this.offset = 0;
+    this.id = -1;
   }
 }

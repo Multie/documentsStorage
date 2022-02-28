@@ -17,6 +17,7 @@ export class AppComponent {
   navigation:Array<{label:string,path:string,icon:string}> = [
     {label:"Start",path:"/start",icon:"text_snippet"},
     {label:"Files",path:"/files",icon:"summarize"},
+    {label:"New File",path:"/newfile",icon:"summarize"},
   ];
 
   navigate(path:string) {

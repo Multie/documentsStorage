@@ -41,6 +41,8 @@
                 </mat-tab>-->
                 <mat-tab class="documentGroupTab" *ngFor="let path of file.files" label="{{path}}">
                     <ng-template matTabContent>
+                        <app-file-viewer class="documentImageContainer" [filePath]="path"></app-file-viewer>
+                        <!--
                         <div class="documentImageContainer" *ngIf="isImage(path)">
 
                             <img class="documentImage" src="{{createFullImageUrl(path)}}">
@@ -55,7 +57,7 @@
                         </div>
                         <div class="other" *ngIf="isOther(path)">
 
-                        </div>
+                        </div>-->
                         <button class="documentImageRemove" *ngIf="editDetails" mat-icon-button
                         (click)="removeFile(path)">
                             <mat-icon>close</mat-icon>

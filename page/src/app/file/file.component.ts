@@ -21,7 +21,7 @@ export class FileComponent implements OnInit {
   editDetails: boolean;
 
   constructor(public data: DataService, private router: Router, private route: ActivatedRoute) {
-    this.showDetails = false;
+    this.showDetails = true;
     this.editDetails = false;
     this.file = new dataFile();
   }

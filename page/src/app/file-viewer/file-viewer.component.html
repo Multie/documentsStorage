@@ -1,0 +1,16 @@
+<div *ngIf="fileName && fileName.length > 0">
+    <div>
+       
+    </div>
+    <div class="container" *ngIf="isImage">
+        <img class="image" src="{{fileName}}">
+    </div>
+    <div class="container" *ngIf="isPdf">
+        <pdf-viewer [src]="fileName" [render-text]="true" [original-size]="false"
+            class="pdf"></pdf-viewer>
+    </div>
+    <div class="container" *ngIf="isVideo">
+    </div>
+    <div class="container" *ngIf="isOther">
+    </div>
+</div>

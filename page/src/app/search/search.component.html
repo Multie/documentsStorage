@@ -1,37 +1,43 @@
 <div class="root">
-    
-
     <div class="header">
         <mat-form-field class="inputText">
-            <input type="search" [(ngModel)]="search" matInput placeholder="Search">
+            <input type="search" [(ngModel)]="filterObject.name" matInput placeholder="Name">
         </mat-form-field>
+
         <button mat-icon-button (click)="toggleMoreFilter()">
             <mat-icon *ngIf="!open">expand_more</mat-icon>
             <mat-icon *ngIf="open">expand_less</mat-icon>
-          </button>
-          <button mat-icon-button (click)="applyFilter()">
+        </button>
+        <button mat-icon-button (click)="applyFilter()">
             <mat-icon>send</mat-icon>
-          </button>
+        </button>
     </div>
-           
-        <div class="content" *ngIf="open">
-            <mat-form-field class="inputDate">
-                <input type="date"  [(ngModel)]="startDate" matInput placeholder="Start Date">
-            </mat-form-field>
-            <mat-form-field class="inputDate">
-                <input type="date"  [(ngModel)]="endDate" matInput placeholder="End Date">
-            </mat-form-field>
-            <mat-form-field class="inputText">
-                <input type="text"  [(ngModel)]="keywords" matInput placeholder="Keywords">
-            </mat-form-field>
-            <mat-form-field class="inputText">
-                <input type="text" [(ngModel)]="category" matInput placeholder="Kategorie">
-            </mat-form-field>
-            <mat-form-field class="inputText">
-                <input type="number" [(ngModel)]="fileCount" matInput placeholder="File Count">
-            </mat-form-field>
-        </div>
-   
-    
-  
+
+    <div class="content" *ngIf="open">
+        <mat-form-field class="inputDate">
+            <input type="date" [(ngModel)]="filterObject.startDate" matInput placeholder="Start Date"
+                (keydown.enter)="applyFilter()">
+        </mat-form-field>
+        <mat-form-field class="inputDate">
+            <input type="date" [(ngModel)]="filterObject.endDate" matInput placeholder="End Date">
+        </mat-form-field>
+        <mat-form-field class="inputText">
+            <input type="text" [(ngModel)]="filterObject.description" matInput placeholder="Description"
+                (keydown.enter)="applyFilter()">
+        </mat-form-field>
+
+        <mat-form-field class="inputText">
+            <input type="text" [(ngModel)]="filterObject.keywords" matInput placeholder="Keywords"
+                (keydown.enter)="applyFilter()">
+        </mat-form-field>
+        <mat-form-field class="inputText">
+            <input type="text" [(ngModel)]="filterObject.category" matInput placeholder="Kategorie"
+                (keydown.enter)="applyFilter()">
+        </mat-form-field>
+
+        <mat-form-field class="inputText">
+            <input type="number" [(ngModel)]="filterObject.count" matInput placeholder="File Count"
+                (keydown.enter)="applyFilter()">
+        </mat-form-field>
+    </div>
 </div>

@@ -14,7 +14,12 @@ export class DataService {
   constructor(private http: HttpClient) {
     this.initImageToText();
     this.sidenav = false;
-    this.serverUrl = "http://localhost:3000";
+    if (document.baseURI.includes("127.0.0.1") || document.baseURI.includes("localhost")) {
+      this.serverUrl = "http://localhost:3000/";
+    }
+    else {
+      this.serverUrl = document.baseURI;
+    }
   }
 
 
@@ -24,35 +29,41 @@ export class DataService {
     });
   };
 
-  imageToText(image: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement, language: string = "de+eng"): Promise<string> {
+  imageToText(image: HTMLImageElement, language: string = "deu+eng"): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
+      await this.tesseractWorker.load();
+      await this.tesseractWorker.loadLanguage(language);
+      await this.tesseractWorker.initialize(language);
+     
+    
+    
+     
       /* if (typeof(image)==typeof("")){
          var str:string = image as string;
          if (!str.match(/data:image\/([a-zA-Z]*);base64,([^"]*))/g)) {
            reject("String does not match data:image\/([a-zA-Z]*);base64,([^\"]*)");
          }
        }*/
-      await this.tesseractWorker.load();
-      await this.tesseractWorker.loadLanguage(language);
-      await this.tesseractWorker.initialize('eng');
+      
       //await this.tesseractWorker.setParameters({
       //tessjs_create_osd: '1',
       //});
+      console.debug("recognize")
       var { data: { text } } = await this.tesseractWorker.recognize(image);
       resolve(text);
     });
   }
 
-  getFileInfos(start: number = -1, count: number = -1, filter: any = null): Observable<Array<dataFile>> {
+  getFileInfos(filter: any = null): Observable<Array<dataFile>> {
     return new Observable<Array<dataFile>>(observer => {
-      var url = this.serverUrl + "/api/files";
+      var url = this.serverUrl + "api/files";
       var params = "";
-      if (start >= 0) {
+      /*if (start >= 0) {
         params += "&start=" + start;
       }
       if (count > 0) {
         params += "&count=" + count;
-      }
+      }*/
       if (filter) {
         var keys = Object.keys(filter);
         keys.forEach(key => {
@@ -82,7 +93,15 @@ export class DataService {
 
   getNewId(): Observable<number> {
     return new Observable<number>((observer) => {
-      var url = this.serverUrl + "/api/newId";
+      var url = this.serverUrl + "api/newId";
+      this.http.get(url).subscribe((data: any) => {
+        observer.next(data as number);
+      });
+    });
+  }
+  getFileCount(): Observable<number> {
+    return new Observable<number>((observer) => {
+      var url = this.serverUrl + "api/fileCount";
       this.http.get(url).subscribe((data: any) => {
         observer.next(data as number);
       });
@@ -92,15 +111,17 @@ export class DataService {
   getFileInfo(id: number): Observable<dataFile> {
     return new Observable<dataFile>((observer) => {
       if (id < 0) {
-
+        observer.next(new dataFile());
+        observer.complete();
       }
-      var url = this.serverUrl + "/api/files/" + id;
+      var url = this.serverUrl + "api/files/" + id;
       this.http.get(url).subscribe((data: any) => {
         var file: any = new dataFile();
         var keys = Object.keys(file);
         keys.forEach((key: string) => {
           file[key] = data[key];
         });
+       // console.log(file);
         observer.next(file);
       });
     });
@@ -108,8 +129,14 @@ export class DataService {
 
   setFileInfo(file: dataFile) {
     return new Observable<dataFile>((observer) => {
-      var url = this.serverUrl + "/api/files";
-      console.log(url);
+      var url = this.serverUrl + "api/files";
+      console.debug("setFileInfo",file.date);
+      var date = new Date(0);
+      date.setDate(file.date.getDate());
+      date.setMonth(file.date.getMonth());
+      date.setFullYear(file.date.getFullYear());
+      file.date = date;
+      console.debug("setFileInfoNew",file.date)
       this.http.post(url, file).subscribe((data: any) => {
         var file: any = new dataFile();
         var keys = Object.keys(file);
@@ -117,22 +144,24 @@ export class DataService {
           file[key] = data[key];
         });
         observer.next(file);
+        observer.complete();
       });
     });
   }
   removeFileInfo(file: dataFile) {
-    var url = this.serverUrl + "/api/files/" + file.id;
+    var url = this.serverUrl + "api/files/" + file.id;
     return this.http.delete(url);
   }
 
   getFile(file: dataFile, fileInfo: string) {
-    var url = this.serverUrl + "/api/files/" + file.id + "/" + fileInfo;
-    return this.http.get(url);
+    var url = this.serverUrl + "api/files/" + file.id + "/" + fileInfo;
+    console.debug(url);
+    return this.http.get(url,{responseType:'blob'});
   }
   uploadFile(file: dataFile, filedata: File): Observable<dataFile> {
     return new Observable<dataFile>((observer) => {
     
-      var url = this.serverUrl + "/api/files/" + file.id + "/file";
+      var url = this.serverUrl + "api/files/" + file.id + "/file";
       console.log("upload to:",url)
       var formData = new FormData();
       formData.append("file", filedata);
@@ -146,12 +175,14 @@ export class DataService {
           file[key] = data[key];
         });
         observer.next(file);
+        observer.complete();
       });
     });
   }
   deleteFile(file: dataFile, fileInfo: string) {
     return new Observable<dataFile>((observer) => {
-      var url = this.serverUrl + "/api/files/" + file.id + "/" + fileInfo;
+      var url = this.serverUrl + "api/files/" + file.id + "/" + fileInfo;
+      console.log(url);
       return this.http.delete(url).subscribe((data: any) => {
         var file: any = new dataFile();
         var keys = Object.keys(file);
@@ -164,7 +195,7 @@ export class DataService {
   }
 
   createFullImageUrl(path:string):string {
-    return this.serverUrl + "/files/" + path;
+    return this.serverUrl + "files/" + path;
   }
 
 }

@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "pg": "^8.7.3"
+  },
+  "scripts": {
+    "startServer":"nodemon server/server.js"
   }
 }

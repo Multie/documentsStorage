@@ -30,8 +30,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatPaginatorModule} from '@angular/material/paginator'; 
 import {MatChipsModule} from '@angular/material/chips'; 
 import {MatTabsModule} from '@angular/material/tabs'; 
+import {MatStepperModule} from '@angular/material/stepper'; 
+import { ReactiveFormsModule } from '@angular/forms';
+import {MatDatepickerModule} from '@angular/material/datepicker'; 
+
 // Pdf Viewer
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { FileFastInputComponent } from './file-fast-input/file-fast-input.component';
+import { FileViewerComponent } from './file-viewer/file-viewer.component';
+import { DeleteAcceptComponent } from './delete-accept/delete-accept.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -41,7 +49,10 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     FilesComponent,
     SearchComponent,
     TimelineComponent,
-    FileEditComponent
+    FileEditComponent,
+    FileFastInputComponent,
+    FileViewerComponent,
+    DeleteAcceptComponent
   ],
   imports: [
     BrowserModule,
@@ -67,12 +78,16 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     MatChipsModule,
     MatTabsModule,
     BrowserAnimationsModule,
+    MatStepperModule,
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     // Pdf Viewer
     PdfViewerModule,
 
     
   ],
-  providers: [],
+  providers: [MatDatepickerModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
