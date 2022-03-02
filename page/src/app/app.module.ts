@@ -40,6 +40,8 @@ import { FileFastInputComponent } from './file-fast-input/file-fast-input.compon
 import { FileViewerComponent } from './file-viewer/file-viewer.component';
 import { DeleteAcceptComponent } from './delete-accept/delete-accept.component';
 import { MatNativeDateModule } from '@angular/material/core';
+// Camera
+import {WebcamModule} from 'ngx-webcam';
 
 @NgModule({
   declarations: [
@@ -84,6 +86,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatNativeDateModule,
     // Pdf Viewer
     PdfViewerModule,
+    // Camera
+    WebcamModule
 
     
   ],

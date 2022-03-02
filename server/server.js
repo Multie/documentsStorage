@@ -467,11 +467,13 @@ function getFileInfo(id) {
 
     });
 }
-function postFileInfo(file) {
+function postFileInfo(file,withFiles=false) {
     return new Promise((resolve, reject) => {
        console.log("postFileInfo",file)
         var dbfile = appFileToDBFile(file);
-        delete dbfile.files;
+        if (!withFiles) {
+            delete dbfile.files;
+        }
         //console.debug(file);
         var values = [];
         var sql = "";
@@ -706,7 +708,7 @@ function postFile(id, filename, file) {
                 fileInfo.files.push(path);
                 //console.log("BBBB")
 
-                postFileInfo(fileInfo);
+                postFileInfo(fileInfo,true);
                 resolve(fileInfo);
             }, (err) => {
                 var fileInfo = {};

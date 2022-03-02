@@ -82,7 +82,7 @@ export class FileFastInputComponent implements OnInit {
   getDateText(): string {
     this.file.date = new Date(this.file.date);
 
-    var date:string = `${this.file.date.getDate()}.${this.file.date.getMonth()+1}.${this.file.date.getFullYear()}`;
+    var date: string = `${this.file.date.getDate()}.${this.file.date.getMonth() + 1}.${this.file.date.getFullYear()}`;
     //console.log("get", this.file.date,date,JSON.stringify(this.file.date));
     return date;
 
@@ -112,7 +112,13 @@ export class FileFastInputComponent implements OnInit {
     var index = list.indexOf(element);
     if (index >= 0) {
       list.splice(index, 1);
+      this.files.forEach((file: TmpFile) => {
+        file.tsv.forEach(tsv => {
+          tsv.select = list.includes(tsv.text)
+        });
+      });
     }
+
   }
   addChip(list: Array<any>, event: MatChipInputEvent) {
     if (!list) {
@@ -129,8 +135,14 @@ export class FileFastInputComponent implements OnInit {
           list.push(value);
         }
       });
-
     }
+
+
+    this.files.forEach((file: TmpFile) => {
+      file.tsv.forEach(tsv => {
+        tsv.select = list.includes(tsv.text)
+      });
+    });
 
     event.chipInput!.clear();
   }
@@ -255,7 +267,7 @@ export class FileFastInputComponent implements OnInit {
       this.deletedFiles.push(deletedfiles[0]);
     }
   }
-  orcFileSearch: boolean = false;
+  orcFileSearch: number = 0
   ocrFile(file: TmpFile, event: any) {
     //this.data.imageToText();
     console.log(event);
@@ -286,19 +298,16 @@ export class FileFastInputComponent implements OnInit {
     console.log(file);
     if (file.src && fileType.length > 0) {
       image.src = file.src;
-      this.orcFileSearch = true;
-      this.data.imageToText(image).then((text) => {
-        console.log("result:")
-        console.log(text);
-
-        var newtext = text.replace(/([^A-Za-z0-9 ])/g, "")
-        newtext = newtext.split(" ").filter((seq) => {
-          return seq.length > 1;
-        }).join(" ");
-        console.debug(text, newtext, text == newtext);
-
-        this.orcInput.nativeElement.value = newtext;
-        this.orcFileSearch = false;
+      this.orcFileSearch = 0.1;
+      this.data.imageToText(image, "deu+eng", " abcdefghijklmnopqrstuvwxyzäöüABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789.,-+/*()").subscribe((data: any) => {
+        if (data.progress && data.status == "recognizing text") {
+          this.orcFileSearch = data.progress;
+        }
+        if (data.tsv) {
+          this.orcFileSearch = 0;
+          console.log((data.tsv));
+          file.tsv = data.tsv;
+        }
       });
     }
   }
@@ -329,6 +338,29 @@ export class FileFastInputComponent implements OnInit {
     });
   }
 
+  selectTsv(tsv: any, event: any) {
+    if (event.type == "click") {
+      if (!tsv.select) {
+        tsv.select = true;
+        this.orcInput.nativeElement.value += " " + tsv.text;
+      }
+      else {
+        tsv.select = false;
+        this.orcInput.nativeElement.value = this.orcInput.nativeElement.value.replace(tsv.text, "").replace("  ", " ");
+      }
+    }
+    else {
+      if (event.buttons == 1 && !tsv.select) {
+        tsv.select = true;
+        this.orcInput.nativeElement.value += " " + tsv.text;
+      }
+      else if (event.buttons == 2 && tsv.select) {
+        tsv.select = false;
+        this.orcInput.nativeElement.value = this.orcInput.nativeElement.value.replace(tsv.text, "").replace("  ", " ");
+      }
+    }
+  }
+
 }
 
 class TmpFile {
@@ -336,10 +368,12 @@ class TmpFile {
   src: any;
   path: string;
   reader: FileReader;
+  tsv: Array<any>;
   constructor() {
     this.file = null;
     this.src = "";
     this.path = "";
+    this.tsv = [];
     this.reader = new FileReader();
     this.reader.onload = (e) => {
       this.onLoad(e);

@@ -134,11 +134,11 @@
                          <button class="changeButton" mat-icon-button (click)="movefile(tmpFile,1)" *ngIf="i< files.length-1">
                              <mat-icon>expand_more</mat-icon>
                          </button>
-                         <button class="changeButton" mat-icon-button (click)="ocrFile(tmpFile,$event)" *ngIf="!this.orcFileSearch">
+                         <button class="changeButton" mat-icon-button (click)="ocrFile(tmpFile,$event)" *ngIf="this.orcFileSearch == 0">
                             <mat-icon>find_in_page</mat-icon>
                         </button>
-                        <div class="changeButton" *ngIf="this.orcFileSearch">
-                            <mat-spinner [diameter]="24"></mat-spinner>
+                        <div class="changeButton" *ngIf="this.orcFileSearch > 0">
+                            <mat-spinner [diameter]="24" mode="determinate" [value]="orcFileSearch*100"></mat-spinner>
                         </div>
                          <div class="changeButton filePreviewPath" *ngIf="tmpFile.path">
                             {{tmpFile.path}}
@@ -150,13 +150,27 @@
                              <mat-icon>delete</mat-icon>
                          </button>
                      </div>
-                    <app-file-viewer 
+                     <div class="filePreviewContainer">
+                         <div class="filePreviewTsv">
+                            <div  *ngFor="let tsv of tmpFile.tsv" class="filePreviewTsvButton" [ngStyle]="{
+                                'top': tsv.top + 'px',
+                                'left': tsv.left + 'px',
+                                'width': tsv.width + 'px',
+                                'height': '1em',
+                                'border-color': tsv.select?'red':'black' }" (click)="selectTsv(tsv,$event)" (mouseenter) ="selectTsv(tsv,$event)">
+                                    
+                            </div>
+                         </div>
+                        <app-file-viewer 
                         class="filePreviewImage" 
                         [src]="tmpFile.src"
                         [filePath]="tmpFile.path" >
                     </app-file-viewer>
+                     </div>
+                    
                 </div>
             </div>
+
             <mat-list-item role="listitem" *ngIf="edit">
                 <button mat-button class="itemButton" (click)="openDialog()">
                     Delete
