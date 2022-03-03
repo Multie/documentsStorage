@@ -844,7 +844,7 @@ server.get('*', function (req, res) {
     res.redirect("/index.html");
 });
 
-var port = 3000;
+var port = 4000;
 server.listen(port, () => {
     console.log(`PageBuilder server running at http://127.0.0.1:${port}`)
     //createHistogramm();

@@ -15,7 +15,7 @@ export class DataService {
     this.initImageToText();
     this.sidenav = false;
     if (document.baseURI.includes("127.0.0.1") || document.baseURI.includes("localhost")) {
-      this.serverUrl = "http://localhost:3000/";
+      this.serverUrl = "http://localhost:4000/";
     }
     else {
       this.serverUrl = document.baseURI;
