@@ -18,23 +18,23 @@ if (!fs.existsSync(rootFilesDirectory)) {
 var dbtableName = "documents";
 var dbclient = null;
 var dbColums = {
-    id:"serial PRIMARY KEY",
-    name:"TEXT",
-    type:"TEXT",
-    description:"TEXT",
-    ocr:"TEXT",
-    keywords:"TEXT",
-    category:"TEXT",
-    files:"TEXT",
-    date:"DATE",
+    id: "serial PRIMARY KEY",
+    name: "TEXT",
+    type: "TEXT",
+    description: "TEXT",
+    ocr: "TEXT",
+    keywords: "TEXT",
+    category: "TEXT",
+    files: "TEXT",
+    date: "DATE",
 };
 
 
 var queryDropTable = {
-    text:`DROP TABLE IF EXISTS `+dbtableName,
+    text: `DROP TABLE IF EXISTS ` + dbtableName,
 };
 var queryCreateTable = {
-    text:`CREATE TABLE ${dbtableName} (${ Object.keys(dbColums).map((key,index,array)=> {
+    text: `CREATE TABLE ${dbtableName} (${Object.keys(dbColums).map((key, index, array) => {
         return `${key} ${dbColums[key]}`
     }).join(", ")})`,
     /*values:(Object.keys(dbColums).map((key,index,value)=> {
@@ -42,29 +42,29 @@ var queryCreateTable = {
     })).flat()*/
 }
 var queryGetNewId = {
-    text:`SELECT id from ${dbtableName} ORDER BY id DESC LIMIT 1`,
+    text: `SELECT id from ${dbtableName} ORDER BY id DESC LIMIT 1`,
 }
 var queryGetFileInfos = {
-    text:`SELECT * from ${dbtableName}`,
+    text: `SELECT * from ${dbtableName}`,
 }
 var queryGetFileInfo = {
-    text:`select * from ${dbtableName} where id = $1`,
+    text: `select * from ${dbtableName} where id = $1`,
 }
 var querryNewFileInfo = {
-    text:`INSERT INTO ${dbtableName} (${Object.keys(dbColums).map((key,index,array)=> {
-        return `$${index*2}`
-    }).join(", ")}) VALUES (${Object.keys(dbColums).map((key,index,array)=> {
-        return `$${index*2+1}`
-    }).join(", ")}) ON CONFLICT (id) DO UPDATE SET ${Object.keys(dbColums).map((key,index,array)=> {
-        return `$${index*2} = $${index*2+1}`
+    text: `INSERT INTO ${dbtableName} (${Object.keys(dbColums).map((key, index, array) => {
+        return `$${index * 2}`
+    }).join(", ")}) VALUES (${Object.keys(dbColums).map((key, index, array) => {
+        return `$${index * 2 + 1}`
+    }).join(", ")}) ON CONFLICT (id) DO UPDATE SET ${Object.keys(dbColums).map((key, index, array) => {
+        return `$${index * 2} = $${index * 2 + 1}`
     }).join(", ")
 
-    } WHERE id=$${Object.keys(dbColums).indexOf("id")}`,
-    values:[]
+        } WHERE id=$${Object.keys(dbColums).indexOf("id")}`,
+    values: []
 }
 var queryDeleteFileInfo = {
-    text:`DELETE FROM ${dbtableName} WHERE id=$1`,
-    values:[]
+    text: `DELETE FROM ${dbtableName} WHERE id=$1`,
+    values: []
 }
 setupDB(false);
 
@@ -81,14 +81,14 @@ server.use("/files", express.static(rootFilesDirectory));
 server.use("/", express.static("page"));
 
 
-function setupDB(createDB=false) {
-    
-    types.setTypeParser(types.builtins.DATE, function(val) {
-        console.log(val);
+function setupDB(createDB = false) {
+
+    types.setTypeParser(types.builtins.DATE, function (val) {
+        //console.log(val);
         return val;
     });
-    
-    
+
+
     dbclient = new Client({
         user: 'app-documentStorage',
         host: 'localhost',
@@ -101,32 +101,29 @@ function setupDB(createDB=false) {
 
     if (createDB) {
 
-        
-
-
-        dbclient.query(queryDropTable,(err,res)=> {
+        dbclient.query(queryDropTable, (err, res) => {
             if (err) {
                 console.error(queryDropTable)
                 console.trace(err);
-               
+
             }
         });
         // Create sql command to create new table
-       /* var sql = "";
+        /* var sql = "";
+ 
+         sql += `CREATE TABLE ${dbtableName} (`;
+ 
+         var keys = Object.keys(dbColums);
+         keys.forEach(key => {
+             sql += key + " " + dbColums[key] + ",";
+         });
+         sql = sql.substring(0,sql.length-1);
+         sql += ")";
+ 
+ 
+         sql = sql.replace("\n", "").replace("\r", "").replace("  ", " ").replace("\t", "");
+ */
 
-        sql += `CREATE TABLE ${dbtableName} (`;
-
-        var keys = Object.keys(dbColums);
-        keys.forEach(key => {
-            sql += key + " " + dbColums[key] + ",";
-        });
-        sql = sql.substring(0,sql.length-1);
-        sql += ")";
-
-
-        sql = sql.replace("\n", "").replace("\r", "").replace("  ", " ").replace("\t", "");
-*/
-   
         dbclient.query(queryCreateTable, (err, res) => {
             if (err) {
                 console.error(queryCreateTable)
@@ -137,7 +134,7 @@ function setupDB(createDB=false) {
 
 }
 function setupApi(server) {
-    
+
     server.get("/api/newId", (req, res) => {
         getNewId().then((id) => {
             res.status(200).send(id.toString());
@@ -184,7 +181,7 @@ function setupApi(server) {
 
     server.delete("/api/files/:id", (req, res) => {
         var id = req.params.id;
-        console.log(id);
+        //console.log(id);
         deleteFileInfo(id).then(() => {
             res.status(200).send();
         }, (err) => {
@@ -260,14 +257,14 @@ function appFileToDBFile(file) {
         file.category = [];
     }
     dbFile.category = file.category.join(arraySeperator).replace("'", "");
-    
+
     if (!file.files) {
         file.files = [];
     }
     dbFile.files = file.files.join(arraySeperator).replace("'", "");
-    
+
     dbFile.date = file.date;
-    if (dbFile.date == undefined ) {
+    if (dbFile.date == undefined) {
         dbFile.date = null;
     }
     /*if (file.files && file.files.length > 0) {
@@ -318,8 +315,8 @@ function dbFileToAppFile(file) {
     if (file.date) {
         appFile.date = new Date(file.date);
     }
-    console.debug("dbFileToAppFile",file,"->",appFile);
-    console.debug("dbFileToAppFile",file.date,"->",appFile.date);
+    //console.debug("dbFileToAppFile", file, "->", appFile);
+    //console.debug("dbFileToAppFile", file.date, "->", appFile.date);
 
     return appFile;
 }
@@ -335,7 +332,7 @@ function getNewId() {
                 return;
             }
             if (res.rows.length == 1) {
-                resolve(res.rows[0].id+1);
+                resolve(res.rows[0].id + 1);
             }
             else {
                 resolve(1);
@@ -345,7 +342,7 @@ function getNewId() {
 }
 
 function getTotalFilesCount() {
-    return new Promise((resolve,reject)=> {
+    return new Promise((resolve, reject) => {
         var sql = `SELECT (reltuples / relpages * (pg_relation_size(oid) / 8192))::bigint FROM   pg_class WHERE  oid = '${dbtableName}'::regclass`
         dbclient.query(sql, (err, res) => {
             if (err) {
@@ -355,7 +352,7 @@ function getTotalFilesCount() {
                 return;
             }
             if (res.rows.length == 1) {
-                resolve(res.rows[0].id+1);
+                resolve(res.rows[0].id + 1);
             }
             else {
                 resolve(1);
@@ -371,7 +368,7 @@ function getFileInfos(filter) {
         var arguments = "";
         if (filter.startDate) {
             var date = new Date(filter.startDate)
-            values.push(`${date.toISOString()}` );
+            values.push(`${date.toISOString()}`);
             arguments += ` date >= $${values.length} `
         }
         if (filter.endDate) {
@@ -379,14 +376,14 @@ function getFileInfos(filter) {
                 arguments += " AND "
             }
             var date = new Date(filter.endDate)
-            values.push(`${date.toISOString()}` );
+            values.push(`${date.toISOString()}`);
             arguments += ` date <= $${values.length} OR date is null`;
         }
         if (filter.name) {
             var words = filter.name.split(/( ,)/g);
             var calls = [];
             words.forEach(word => {
-                values.push("%"+word+"%");
+                values.push("%" + word + "%");
                 calls.push(`name LIKE $${values.length}`);
             });
             arguments += calls.join(" AND ");
@@ -395,7 +392,7 @@ function getFileInfos(filter) {
             var words = filter.description.split(/( ,)/g);
             var calls = [];
             words.forEach(word => {
-                values.push("%"+word+"%");
+                values.push("%" + word + "%");
                 calls.push(`description LIKE $${values.length}`);
             });
             arguments += calls.join(" AND ");
@@ -404,14 +401,14 @@ function getFileInfos(filter) {
             var words = filter.keywords.split(/( ,)/g);
             var calls = [];
             words.forEach(word => {
-                values.push("%"+word+"%");
+                values.push("%" + word + "%");
                 calls.push(` keywords LIKE $${values.length}`);
             });
             arguments += calls.join(" AND ");
         }
         if (filter.id && filter.id >= 0) {
             values.push(filter.id);
-            arguments +=`id = $${values.length}`
+            arguments += `id = $${values.length}`
         }
         if (arguments.length > 0) {
             sql += " WHERE " + arguments;
@@ -419,15 +416,15 @@ function getFileInfos(filter) {
         if (filter.count) {
             values.push(filter.count);
             sql += ` ORDER BY name LIMIT $${values.length}`;
-        }    
+        }
         if (filter.count && filter.offset) {
             values.push(filter.offset);
             sql += ` OFFSET $${values.length}`;
         }
-    
-       // console.log(filter,sql,values);
+
+        //console.debug(filter,sql,values);
         // `SELECT * from ${dbtableName}`
-        dbclient.query(sql,values, (err, res) => {
+        dbclient.query(sql, values, (err, res) => {
             if (err) {
                 console.trace(err);
                 reject(err);
@@ -437,8 +434,8 @@ function getFileInfos(filter) {
             res.rows.forEach(row => {
                 files.push(dbFileToAppFile(row));
             });
-            resolve(files);  
-          })
+            resolve(files);
+        })
     });
 }
 function getFileInfo(id) {
@@ -447,8 +444,8 @@ function getFileInfo(id) {
             reject("id is null");
             return;
         }
-        var sql = "select * from " + dbtableName +" where id = $1"
-        dbclient.query(sql,[id], (err, res) => {
+        var sql = "select * from " + dbtableName + " where id = $1"
+        dbclient.query(sql, [id], (err, res) => {
             if (err) {
                 console.log(err);
                 reject(err);
@@ -467,9 +464,9 @@ function getFileInfo(id) {
 
     });
 }
-function postFileInfo(file,withFiles=false) {
+function postFileInfo(file, withFiles = false) {
     return new Promise((resolve, reject) => {
-       console.log("postFileInfo",file)
+        //console.log("postFileInfo", file)
         var dbfile = appFileToDBFile(file);
         if (!withFiles) {
             delete dbfile.files;
@@ -479,44 +476,39 @@ function postFileInfo(file,withFiles=false) {
         var sql = "";
         if (dbfile.id >= 0) {
             var values = [];
-            var sql = `INSERT INTO ${dbtableName} (${
-                Object.keys(dbColums).join(", ")
-            }) VALUES (${
-                Object.keys(dbColums).map((key,index,array)=> {
+            var sql = `INSERT INTO ${dbtableName} (${Object.keys(dbColums).join(", ")
+                }) VALUES (${Object.keys(dbColums).map((key, index, array) => {
                     values.push(dbfile[key]);
-                    return `$${index+1}`
+                    return `$${index + 1}`
                 }).join(", ")
-            }) ON CONFLICT (id) DO UPDATE SET ${
-                Object.keys(dbColums).map((key,index,array)=> {
+                }) ON CONFLICT (id) DO UPDATE SET ${Object.keys(dbColums).map((key, index, array) => {
                     return `${key} = $${index + 1}`
                 }).join(", ")
-            } RETURNING *`;
+                } RETURNING *`;
         }
         else {
             var col = JSON.parse(JSON.stringify(dbColums));
             delete col.id;
-            console.log(col);
-            sql = `INSERT INTO ${dbtableName} (${
-                Object.keys(col).join(", ")
-            }) VALUES (${
-                Object.keys(col).map((key,index,array)=> {
+            //console.log(col);
+            sql = `INSERT INTO ${dbtableName} (${Object.keys(col).join(", ")
+                }) VALUES (${Object.keys(col).map((key, index, array) => {
                     values.push(dbfile[key]);
-                    return `$${index+1}`
+                    return `$${index + 1}`
                 }).join(", ")}) RETURNING *`;
         }
-        console.debug(sql,values);
-        dbclient.query(sql,values, (err, res) => {
+        //console.debug(sql, values);
+        dbclient.query(sql, values, (err, res) => {
             if (err) {
-                console.error(sql,values);
+                console.error(sql, values);
                 console.trace(err);
                 reject(err);
                 return;
             }
             if (res.rows.length > 0) {
                 var file = dbFileToAppFile(res.rows[0]);
-                
+
                 //console.debug("result",res.rows[0],"->",file);
-                resolve(file); 
+                resolve(file);
             }
             else {
                 var err = "nothing added"
@@ -524,93 +516,93 @@ function postFileInfo(file,withFiles=false) {
                 reject(err);
             }
         });
-    /*
-        
-        //console.debug(dbfile)
-        if (file.id < 0 || file.id == undefined || file.id == null) {
-            console.debug("create new");
-            var sql = "";
-            sql += `INSERT INTO ${dbtableName} (`;
-
-
-            var keys = Object.keys(dbfile);
-            keys = keys.filter((key) => { return key != "id" });
-
-
-            sql += keys.join(",");
-            sql += ") VALUES (";
-            var values = Object.values(dbfile);
-            sql += keys.map((key) => { return "'" + file[key] + "'" }).join(",");
-            sql += ")";
-
-            /*
-            `INSERT INTO ${dbtableName} 
-            ( name, type, description, ocr, keywords, category, filePaths, fileCreated, fileChanged)
-                VALUES (
-                '${name}',
-                '${type}',
-                '${description}',
-                '${ocr}',
-                '${keywords}',
-                '${category}',
-                '${filePaths}',
-                '${fileCreated}',
-                '${fileChanged}'
-                )` */ 
+        /*
+            
+            //console.debug(dbfile)
+            if (file.id < 0 || file.id == undefined || file.id == null) {
+                console.debug("create new");
+                var sql = "";
+                sql += `INSERT INTO ${dbtableName} (`;
+    
+    
+                var keys = Object.keys(dbfile);
+                keys = keys.filter((key) => { return key != "id" });
+    
+    
+                sql += keys.join(",");
+                sql += ") VALUES (";
+                var values = Object.values(dbfile);
+                sql += keys.map((key) => { return "'" + file[key] + "'" }).join(",");
+                sql += ")";
+    
                 /*
-                    console.debug(sql)
-            dbclient.query(sql, (err, res) => {
-                if (err) {
-                    console.log(err);
-                    reject(err);
-                    return;
-                }
-
-                dbclient.query(`select * from ${dbtableName} ORDER BY id DESC LIMIT 1`, (err1, res) => {
-                    if (err1) {
-                        console.log(err1);
-                        reject(err1);
-                        return;
-                    }
-                    if (res.rows.length == 1) {
-                        var file = dbFileToAppFile(res.rows[0]);
-
-                        resolve(file);
-                    }
-                });
-            })
-        }
-        else {
-            //console.log("exist");
-
-            var sql = `UPDATE ${dbtableName} SET `
-            var keys = Object.keys(dbfile);
-            keys = keys.filter((key) => { return key != "id" });
-            sql += keys.map(key => { return `${key} = '${dbfile[key]}'` }).join(",");
-            sql += `WHERE id = ${dbfile.id}`
-            /*
-            `UPDATE ${dbtableName} SET 
-            name = '${name}', 
-            type = '${type}', 
-            description = '${description}', 
-            ocr =  '${ocr}', 
-            keywords = '${keywords}', 
-            category = '${category}', 
-            filePaths = '${filePaths}',
-            fileCreated = '${fileCreated}', 
-            fileChanged = '${fileChanged}'
-            WHERE id = ${id}`
-             *//*
+                `INSERT INTO ${dbtableName} 
+                ( name, type, description, ocr, keywords, category, filePaths, fileCreated, fileChanged)
+                    VALUES (
+                    '${name}',
+                    '${type}',
+                    '${description}',
+                    '${ocr}',
+                    '${keywords}',
+                    '${category}',
+                    '${filePaths}',
+                    '${fileCreated}',
+                    '${fileChanged}'
+                    )` */
+        /*
             console.debug(sql)
-            dbclient.query(sql, (err, res) => {
-                if (err) {
-                    console.log(sql, err);
-                    reject(err);
-                    return;
-                }
+    dbclient.query(sql, (err, res) => {
+        if (err) {
+            console.log(err);
+            reject(err);
+            return;
+        }
+
+        dbclient.query(`select * from ${dbtableName} ORDER BY id DESC LIMIT 1`, (err1, res) => {
+            if (err1) {
+                console.log(err1);
+                reject(err1);
+                return;
+            }
+            if (res.rows.length == 1) {
+                var file = dbFileToAppFile(res.rows[0]);
+
                 resolve(file);
-            });
-        }*/
+            }
+        });
+    })
+}
+else {
+    //console.log("exist");
+
+    var sql = `UPDATE ${dbtableName} SET `
+    var keys = Object.keys(dbfile);
+    keys = keys.filter((key) => { return key != "id" });
+    sql += keys.map(key => { return `${key} = '${dbfile[key]}'` }).join(",");
+    sql += `WHERE id = ${dbfile.id}`
+    /*
+    `UPDATE ${dbtableName} SET 
+    name = '${name}', 
+    type = '${type}', 
+    description = '${description}', 
+    ocr =  '${ocr}', 
+    keywords = '${keywords}', 
+    category = '${category}', 
+    filePaths = '${filePaths}',
+    fileCreated = '${fileCreated}', 
+    fileChanged = '${fileChanged}'
+    WHERE id = ${id}`
+     *//*
+       console.debug(sql)
+       dbclient.query(sql, (err, res) => {
+           if (err) {
+               console.log(sql, err);
+               reject(err);
+               return;
+           }
+           resolve(file);
+       });
+   }*/
     });
 }
 function deleteFileInfo(id) {
@@ -708,7 +700,7 @@ function postFile(id, filename, file) {
                 fileInfo.files.push(path);
                 //console.log("BBBB")
 
-                postFileInfo(fileInfo,true);
+                postFileInfo(fileInfo, true);
                 resolve(fileInfo);
             }, (err) => {
                 var fileInfo = {};
@@ -717,13 +709,13 @@ function postFile(id, filename, file) {
                 fileInfo.files.push(path);
                 postFileInfo(fileInfo).then((file) => {
                     resolve(file);
-                },(err)=> {
-                    console.trace(err); 
+                }, (err) => {
+                    console.trace(err);
                     reject(err);
                 });
 
                 //console.trace(err);
-                
+
             });
         })
     });
@@ -739,15 +731,15 @@ function deleteFile(id, filename) {
         if (!fs.existsSync(fullPath)) {
             //reject("file not exist");
             getFileInfo(id).then(fileInfo => {
-                console.debug("deleteFile",fileInfo.files,filename,path)
+                console.debug("deleteFile", fileInfo.files, filename, path)
                 var index = fileInfo.files.findIndex(val => {
-                    console.log(val.path == path,val.path,path)
+                    console.log(val.path == path, val.path, path)
                     return val == path;
                 })
                 if (index >= 0) {
                     fileInfo.files.splice(index, 1);
                 }
-                console.debug("deleteFile",fileInfo.files,filename,index,path)
+                console.debug("deleteFile", fileInfo.files, filename, index, path)
                 //console.debug(fileInfo);
                 postFileInfo(fileInfo).then((file) => {
                     //console.debug(file);
@@ -779,6 +771,73 @@ function deleteFile(id, filename) {
     });
 }
 
+function createHistogramm() {
+    return new Promise((resolve, reject) => {
+        var histogrammTableName = "histogramm";
+        var drop = `DROP TABLE IF EXISTS ${histogrammTableName}`
+        var create = `CREATE TABLE ${histogrammTableName} (WordCount integer,KeyName text PRIMARY KEY)`;
+        dbclient.query(drop, (err, res) => {
+            if (err) {
+                console.error(queryDropTable)
+                console.trace(err);
+            }
+            dbclient.query(create, (err, res) => {
+                if (err) {
+                    console.error(queryDropTable)
+                    console.trace(err);
+                }
+                console.debug("created Table " + histogrammTableName);
+                var proms = [];
+                getFileInfos({}).then((allFiles) => {
+                    allFiles.forEach(allfile => {
+                        //console.log(allfile);
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.name));
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.type));
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.tags));
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.description));
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.ocr));
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.keywords));
+                        proms.push(insertHistogrammText(histogrammTableName,allfile.category));
+                   /* */});
+                    Promise.all(proms).then((results)=> {
+                        resolve();
+                    });
+                });
+            });
+        });
+    })
+}
+
+function insertHistogrammText(tableName,input) {
+    return new Promise((resolve, reject) => {
+        var text = "";
+        if (Array.isArray(text)) {
+            text = input.join(" ").toLowerCase();
+        }
+        else if (typeof(input)==typeof("")) {
+            text = input.toLowerCase();
+        }
+        if (text) {
+            var upsert = `INSERT INTO ${tableName} (KeyName,WordCount) VALUES ($1, $2) ON CONFLICT (KeyName) DO UPDATE SET WordCount=${tableName}.WordCount+1 WHERE ${tableName}.KeyName=$1`; //NOTHING`;//
+            var words = text.split(/([ ,.\n\t])/gm);
+            var proms = [];
+            words.forEach(word => {
+                if (word.length > 1) {
+                    var values = [word, 1];
+                    //console.debug(upsert,values)
+                    proms.push(dbclient.query(upsert, values));
+                }
+            });
+            Promise.all(proms).then((results)=> {
+                resolve();
+            },(err)=> {
+                console.trace(err);
+            });
+    }
+    });
+
+}
+
 
 setupApi(server);
 server.get('*', function (req, res) {
@@ -788,4 +847,5 @@ server.get('*', function (req, res) {
 var port = 3000;
 server.listen(port, () => {
     console.log(`PageBuilder server running at http://127.0.0.1:${port}`)
+    //createHistogramm();
 });

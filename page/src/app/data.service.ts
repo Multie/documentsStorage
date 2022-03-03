@@ -33,9 +33,12 @@ export class DataService {
     return new Observable<string>((observer) => {
       this.tesseractWorker = createWorker({
         logger: (m) => {
-          console.log(m)
+          //console.debug(m)
           observer.next(m);
         },
+        workerPath: '../assets/tesseract/worker.min.js',
+        corePath: '../assets/tesseract/tesseract-core.wasm.js',
+        langPath: '../assets/lang-data/eng.traineddata.gz',
       });
       this.tesseractWorker.load().then(() => {
         this.tesseractWorker.loadLanguage(language).then(() => {
@@ -51,14 +54,14 @@ export class DataService {
               console.debug("recognize")
               this.tesseractWorker.recognize(image).then((obj: any) => {
                 console.debug("recognized")
-                console.log(obj.data.box);
+                //console.log(obj.data.box);
                 if (obj.data.tsv) {
                   var tsv: { level: number; page_num: number; block_num: number; par_num: number; line_num: number; word_num: number; left: number; top: number; width: number; heigth: number; conf: number; text: string; }[] = [];
                   var lines = obj.data.tsv.split("\n");
                   lines.forEach((line:string) => {
                     var columes = line.split("\t");
                     if (columes.length == 12) {
-                      if (parseInt(columes[10]) > 0) {
+                      if (parseInt(columes[10]) > 0 && columes[11].length > 1) {
                       var ctsv = {
                         level:parseInt(columes[0]),
                         page_num:parseInt(columes[1]),

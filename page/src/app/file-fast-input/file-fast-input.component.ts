@@ -7,6 +7,7 @@ import { dataFile, DataService } from '../data.service';
 import { concat, forkJoin, merge, mergeAll, Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAcceptComponent } from '../delete-accept/delete-accept.component';
+import { CameraInputComponent } from '../camera-input/camera-input.component';
 
 
 @Component({
@@ -22,20 +23,20 @@ export class FileFastInputComponent implements OnInit {
   deletedFiles: Array<TmpFile>;
   file: dataFile;
   @ViewChild("fileInput") fileInput: any;
-  @ViewChild("cameraInput") cameraInput: any;
   @ViewChild("orcInput") orcInput: any;
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  addNextEnable: boolean;
   selectedFile: number;
-  constructor(public data: DataService, private router: Router, private route: ActivatedRoute, public dialog: MatDialog) {
+  constructor(
+    public data: DataService,
+    private router: Router,
+    private route: ActivatedRoute,
+    public dialog: MatDialog) {
     this.fileInput = {};
-    this.cameraInput = {};
     this.file = new dataFile();
     this.deletedFiles = [];
     this.files = [];
     this.selectedFile = 0;
     this.edit = false;
-    this.addNextEnable = false;
   }
 
   ngOnInit(): void {
@@ -148,28 +149,34 @@ export class FileFastInputComponent implements OnInit {
   }
 
   openFileUpload() {
-    this.fileInput.nativeElement.click();;
+    this.fileInput.nativeElement.click();
   }
   openCameraUpload() {
-    this.cameraInput.nativeElement.click();;
+    //this.cameraInput.nativeElement.click();
+    var dialogRef = this.dialog.open(CameraInputComponent, {
+
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('The dialog was closed');
+        console.log(result);
+        //var exist = this.files.some((value) => {
+        //  return !!value.file && (value.file.name == element.files[a].name);
+        //})
+        //if (!exist) {
+        var tmpFile = new TmpFile();
+        tmpFile.src = result;
+        //tmpFile.file = element.files[a];
+        tmpFile.loadFile(this.data, this.file);
+        this.files.push(tmpFile);
+      }
+      //}
+
+    });
   }
 
   uploadFile() {
     var element = this.fileInput.nativeElement;
-    if (element) {
-      for (var a = 0; a < element.files.length; a++) {
-        var exist = this.files.some((value) => {
-          return !!value.file && (value.file.name == element.files[a].name);
-        })
-        if (!exist) {
-          var tmpFile = new TmpFile();
-          tmpFile.file = element.files[a];
-          tmpFile.loadFile(this.data, this.file);
-          this.files.push(tmpFile);
-        }
-      }
-    }
-    var element = this.cameraInput.nativeElement;
     if (element) {
       for (var a = 0; a < element.files.length; a++) {
         var exist = this.files.some((value) => {
@@ -199,11 +206,11 @@ export class FileFastInputComponent implements OnInit {
   /**
    * Save send file to db
    */
-  save() {
+  save(next = false) {
     //console.debug("save",this.file);
     this.data.setFileInfo(this.file).subscribe((resultFile) => {
       var nextAction = () => {
-        if (this.addNextEnable) {
+        if (next) {
           //console.log(this.addNextEnable);
           var oldfile: dataFile = JSON.parse(JSON.stringify(resultFile));
           var newFile: dataFile = new dataFile();
@@ -214,7 +221,6 @@ export class FileFastInputComponent implements OnInit {
           this.file = newFile;
           this.files = [];
           this.deletedFiles = [];
-
         }
         else {
           this.router.navigateByUrl("files/" + resultFile.id);
@@ -382,15 +388,29 @@ class TmpFile {
 
   loadFile(data: DataService, file: dataFile) {
     console.log(this.file, this.path.length);
-    if (this.file && this.path.length == 0) {
+    if (this.file && this.path.length == 0 && !this.src) {
       this.reader.readAsDataURL(this.file);
     }
-    else if (!this.file && this.path.length > 0) {
+    else if (!this.file && this.path.length > 0 && !this.src) {
       console.log("load from remote", this.path);
       data.getFile(file, this.path).subscribe((data: any) => {
 
         this.reader.readAsDataURL(data);
       });
+    }
+    else if (!this.file && this.path.length == 0 && this.src) {
+      var arr = this.src.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      var date  = new Date(Date.now());
+      console.debug(date.toISOString())
+      this.file = new File([u8arr], date.toISOString() , { type: mime });
 
     }
   }

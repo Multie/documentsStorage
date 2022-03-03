@@ -1,0 +1,27 @@
+<div>
+    <webcam [ngStyle]="{ 'display': !image? 'block':'none'}"
+        (initError)="handleInitError($event)" 
+        [trigger]="trigger" 
+        (imageCapture)="imageCaptured($event)" >
+    </webcam>
+    <img *ngIf="image" src="{{image}}">
+    <div class="buttons">
+        <button class="detailsHeaderIcon" mat-icon-button (click)="onNoClick()">
+            <mat-icon>close</mat-icon>
+        </button>
+        <button class="detailsHeaderIcon" mat-icon-button (click)="clearImage()" *ngIf="image">
+            <mat-icon>delete</mat-icon>
+        </button>
+      
+        <button class="detailsHeaderIcon" mat-icon-button (click)="captureImage()" *ngIf="!image">
+            <mat-icon>camera</mat-icon>
+        </button>
+        
+        <div class="hiddenbutton"  *ngIf="!image">
+
+        </div>
+        <button class="detailsHeaderIcon" [mat-dialog-close]="image" mat-icon-button *ngIf="image">
+            <mat-icon>done</mat-icon>
+        </button>
+    </div>
+</div>

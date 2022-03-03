@@ -4,8 +4,10 @@
             <mat-icon>arrow_back</mat-icon>
         </button>
         <span class="spacer">New File</span>
-        <mat-slide-toggle [(ngModel)]="addNextEnable" class="slideToggle">Add Next</mat-slide-toggle>
-        <button mat-icon-button (click)="save()" *ngIf="edit">
+        <button mat-icon-button (click)="save(true)" *ngIf="edit && file.id < 0">
+            <mat-icon>post_add</mat-icon>
+        </button>
+        <button mat-icon-button (click)="save(false)" *ngIf="edit">
             <mat-icon>save</mat-icon>
         </button>
         <button mat-icon-button (click)="edit=true" *ngIf="!edit">
@@ -14,26 +16,6 @@
         <button mat-icon-button (click)="cancelEdit()" *ngIf="edit">
             <mat-icon>close</mat-icon>
         </button>
-        
-
-        <!--<button mat-icon-button (click)="addFile()">
-            <mat-icon>note_add</mat-icon>
-        </button>
-        <button class="detailsHeaderIcon" *ngIf="showDetails && editDetails" mat-icon-button
-                        >
-                        <mat-icon>save</mat-icon>
-                    </button>
-                    <button class="detailsHeaderIcon" *ngIf="showDetails && editDetails" mat-icon-button
-                        >
-                        <mat-icon>close</mat-icon>
-                    </button>
-                    <button class="detailsHeaderIcon" *ngIf="showDetails && !editDetails" mat-icon-button
-                        >
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                    <button class="detailsHeaderIcon" mat-icon-button (click)="showDetails=!showDetails">
-                        <mat-icon>article</mat-icon>
-                    </button>-->
     </mat-toolbar>
 
     <div class="content">
@@ -46,8 +28,6 @@
                     <mat-icon>camera</mat-icon>
                 </button>
                 <input class="file" #fileInput type="file" multiple (change)="uploadFile()">
-                <input class="file" #cameraInput type="file" multiple capture="environment" accept="image/*"
-                    (change)="uploadFile()">
             </div>
             <div>
                 <mat-form-field class="detailsForm">
@@ -56,7 +36,7 @@
             </div>
             <div>
                 <mat-form-field class="detailsForm">
-                    <input type="text" [readonly]="!edit" [(ngModel)]="file.description" matInput placeholder="Description">
+                    <textarea type="text" [readonly]="!edit" [(ngModel)]="file.description" matInput placeholder="Description"></textarea>
                 </mat-form-field>
             </div>
             <div>
@@ -87,7 +67,7 @@
                                 <mat-icon>cancel</mat-icon>
                             </button>
                         </mat-chip>
-                        <input placeholder="Categories" [readonly]="!edit" [matChipInputFor]="listCategory"
+                        <input placeholder="Categories" class="detailsFormInput" [readonly]="!edit" [matChipInputFor]="listCategory"
                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                             (matChipInputTokenEnd)="addChip(file.category,$event)">
                     </mat-chip-list>
@@ -102,7 +82,7 @@
                                 <mat-icon>cancel</mat-icon>
                             </button>
                         </mat-chip>
-                        <input placeholder="Keywords" [readonly]="!edit" [matChipInputFor]="listKeywords"
+                        <input placeholder="Keywords" class="detailsFormInput" [readonly]="!edit" [matChipInputFor]="listKeywords"
                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                             (matChipInputTokenEnd)="addChip(file.keywords,$event)">
                     </mat-chip-list>
@@ -117,7 +97,7 @@
                                 <mat-icon>cancel</mat-icon>
                             </button>
                         </mat-chip>
-                        <input #orcInput placeholder="OCR" [readonly]="!edit" [matChipInputFor]="listOCR"
+                        <input  #orcInput class="detailsFormInput" placeholder="OCR" [readonly]="!edit" [matChipInputFor]="listOCR"
                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                             (matChipInputTokenEnd)="addChip(file.ocr,$event)">
                     </mat-chip-list>
