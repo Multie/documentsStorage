@@ -1,0 +1,13 @@
+[Unit]
+Description=A Document Storrage
+After=network.target
+
+[Service]
+Environment="MY_HOST=0.0.0.0"
+Environment="MY_PORT=4000"
+Type=simple
+ExecStart=/usr/local/bin/node /home/multi/documentsStorage/server.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

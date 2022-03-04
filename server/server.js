@@ -91,7 +91,7 @@ function setupDB(createDB = false) {
 
     dbclient = new Client({
         user: 'app-documentStorage',
-        host: 'localhost',
+        host: '192.168.0.120',
         database: 'documents',
         password: 'app-documentStorage',
         port: 5432,
